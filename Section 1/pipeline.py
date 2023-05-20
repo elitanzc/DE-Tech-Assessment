@@ -6,6 +6,9 @@ import os
 import re
 
 # 3rd library imports
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
 import pandas as pd
 
 
@@ -55,7 +58,8 @@ def get_membership_id(last_name, date_of_birth):
     return f"{last_name}_{hashed_dof}"
 
 
-if __name__ == "__main__":
+# Main function to process datasets
+def _process_applications():
     # Ingest raw csv from raw-datasets folder
     filenames = os.listdir(RAW_DATASETS_PATH)
     try:
@@ -101,3 +105,30 @@ if __name__ == "__main__":
         df_invalid.to_csv(f"{FAULTY_DATASETS_PATH}/{timestamp}-applications_dataset.csv", index=False)
     except Exception as e:
         logger.error(f"Error writing files to destination folders: {e}")
+
+
+# Scheduling
+dag = DAG(
+    dag_id="schedule",
+    start_date=datetime(2023, 5, 10),
+    schedule='0 * * * *'
+)
+
+fetch_events = BashOperator(
+    task_id="pull_applications",
+    bash_command=(
+        f"curl -o {RAW_DATASETS_PATH}/applications_dataset_1.csv "
+        "https://raw.githubusercontent.com/ameeraadam/DETechAssessment-23/main/applications_dataset_1.csv && "
+        f"curl -o {RAW_DATASETS_PATH}/applications_dataset_2.csv "
+        "https://raw.githubusercontent.com/ameeraadam/DETechAssessment-23/main/applications_dataset_2.csv"
+    ),
+    dag=dag
+)
+
+process_applications = PythonOperator(
+    task_id="process_applications",
+    python_callable=_process_applications,
+    dag=dag
+)
+
+fetch_events >> process_applications
