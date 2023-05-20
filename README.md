@@ -1,3 +1,11 @@
+# SECTION 1
+- insights from EDA
+- how to run airflow scheduler
+- every one hour, the scheduler first fetches datasets (currently from github) and places them into an existing folder `raw-datasets`, to mimick the process of dropping the applications datasets into the source folder.
+- The dropping will trigger the pipeline (which does the ingestion from source folder, processing, and outputting into processed-/faulty-datasets folders) to run. 
+- In AWS where we can use S3 buckets as the folders, we can set up EventBridge to listen for the event (of dropping datasets into the folder), which will then trigger the pipeline to start running. The pipeline can be implemented simply as a lambda function or as a StepFunction if we want to scale it up.
+
+---
 # SECTION 2
 ## ER diagram
 ---
@@ -26,3 +34,15 @@ cat query_1.sql | docker exec -i postgres-db-container psql -U postgres -d datab
 
 cat query_2.sql | docker exec -i postgres-db-container psql -U postgres -d database
 ```
+
+---
+# Section 3
+
+---
+# Section 4
+> **_NOTE:_** This section follows the details in https://github.com/ameeraadam/DETechAssessment-23/tree/fix/section_4 as the APIs from https://documenter.getpostman.com/view/10808728/SzS8rjbc#b07f97ba-24f4-4ebe-ad71-97fa35f3b683 and https://covid19api.com/ cannot be accessed.
+
+![ER diagram](Section-4/section-4-chart.png)
+
+---
+# Section 5
