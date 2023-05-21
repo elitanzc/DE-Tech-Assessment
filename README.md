@@ -46,3 +46,13 @@ cat query_2.sql | docker exec -i postgres-db-container psql -U postgres -d datab
 
 ---
 # Section 5
+The following models are tested for this classification task:
+
+* Naive Bayes
+* SVM
+* Decision Tree
+* Random Forest
+
+Although the accuracy of all models are still currently less than ideal, Naive Bayes gave the best results out of all of them, so prediction is made with this model.
+
+The predicted value of `buying` is `low`, given the parameters `maint=high, doors=4, lug_boot=big, safety=high, class=good`.
